@@ -1,24 +1,5 @@
 "use strict";
 
-exports.dataTransferItemList = (dataTransfer) => {
-  const len = dataTransfer.items.length;
-  const ret = new Array(len);
-  for (var i=0;i<len;++i) {
-    ret[i] = dataTransfer.items[i];
-  }
-  return ret;
-}
-
-exports.webkitGetAsEntryImpl = (nothing, just, dataTransferItem) => {
-  const ret = dataTransferItem.webkitGetAsEntry();
-  if (ret) {
-    return just(ret);
-  }
-  else {
-    return nothing;
-  }
-}
-
 exports.getEntriesImpl = (left, right, dataTransfer) => {
   const len = dataTransfer.items.length;
   const ret = new Array();
@@ -63,16 +44,15 @@ exports.readDirectoryImpl = (left, right, directoryEntry) => {
             }
             else throw("neither file nor directory");
           }
-          // At this point, we could call a progress callback with ret_.length.
+          // At this point, we could call a progress callback with ret.length.
           // progress :: Int -> Aff Unit
-          // progress(ret_.length);
+          // progress(ret.length);
           readLoop();
         }
       });
     };
     readLoop();
   });
-  // p.then(result => { return ret; });
 }
 
 // https://wicg.github.io/entries-api/#api-fileentry
@@ -87,6 +67,14 @@ exports.directoryName = (d) => {
   return d.name;
 }
 
+exports.directoryPath = (d) => {
+  return d.fullPath;
+}
+
 exports.fileName = (f) => {
   return f.name;
+}
+
+exports.filePath = (f) => {
+  return f.fullPath;
 }

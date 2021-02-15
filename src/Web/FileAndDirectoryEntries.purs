@@ -8,7 +8,9 @@ module Web.FileAndDirectoryEntries
   , getFile
   , readDirectory
   , directoryName
+  , directoryPath
   , fileName
+  , filePath
   )
 where
 
@@ -17,44 +19,20 @@ import Prelude
 import Control.Promise (Promise, toAffE)
 import Data.Either (Either(..))
 import Data.Function.Uncurried (Fn3, runFn3)
-import Data.Maybe (Maybe(..))
 import Effect.Aff (Aff)
 import Effect.Uncurried (EffectFn1, EffectFn3, runEffectFn1, runEffectFn3)
 import Web.File.File (File)
 import Web.HTML.Event.DataTransfer (DataTransfer)
 
--- | A list of `DataTransferItem` objects representing items being dragged.
+
+-- | Represents a file in a file system.
 -- |
--- | https://developer.mozilla.org/en-US/docs/Web/API/DataTransferItemList
-foreign import dataTransferItemList :: DataTransfer -> Array DataTransferItem
-
--- | https://developer.mozilla.org/en-US/docs/Web/API/DataTransferItem/webkitGetAsEntry
-webkitGetAsEntry :: DataTransferItem -> Maybe FileSystemEntry
-webkitGetAsEntry dataTransferItem =
-  runFn3 webkitGetAsEntryImpl Nothing Just dataTransferItem
-
-foreign import webkitGetAsEntryImpl
-  :: forall a. Fn3
-  (Maybe a)
-  (a -> Maybe a)
-  DataTransferItem
-  (Maybe FileSystemEntry)
-
--- foreign import data DataTransferItemList
-
--- | https://developer.mozilla.org/en-US/docs/Web/API/DataTransferItem
-foreign import data DataTransferItem :: Type
-
--- | https://developer.mozilla.org/en-US/docs/Web/API/FileSystemEntry
--- | https://pursuit.purescript.org/search?q=FileSystemEntry
-foreign import data FileSystemEntry :: Type
-
 -- | https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileEntry
--- | https://pursuit.purescript.org/search?q=FileSystemFileEntry
 foreign import data FileSystemFileEntry :: Type
 
+-- | Represents a directory in a file system.
+-- |
 -- | https://developer.mozilla.org/en-US/docs/Web/API/FileSystemDirectoryEntry
--- | https://pursuit.purescript.org/search?q=FileSystemDirectoryEntry
 foreign import data FileSystemDirectoryEntry :: Type
 
 foreign import getEntriesImpl
@@ -65,6 +43,10 @@ foreign import getEntriesImpl
   (Array (Either FileSystemFileEntry FileSystemDirectoryEntry))
 
 -- | Get the `DataTransfer` items as WebKit `FileSystemEntry` objects.
+-- | If any of the `DataTransfer` items are not `FileSystemEntry` objects,
+-- | then they will not be returned.
+-- |
+-- | https://developer.mozilla.org/en-US/docs/Web/API/DataTransferItem/webkitGetAsEntry
 -- | https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer
 -- | https://developer.mozilla.org/en-US/docs/Web/API/FileSystemEntry
 getEntries :: DataTransfer -> Array (Either FileSystemFileEntry FileSystemDirectoryEntry)
@@ -77,24 +59,44 @@ foreign import readDirectoryImpl
   FileSystemDirectoryEntry
   (Promise (Array (Either FileSystemFileEntry FileSystemDirectoryEntry)))
 
--- | Read all of the WebKit `FileSystemEntry` objects from a `FileSystemDirectoryEntry`,
--- | and return when finished.
+-- | Read all of the WebKit `FileSystemEntry` objects from a
+-- | `FileSystemDirectoryEntry`.
 -- | This must be asynchronous because `readEntries` is asynchronous.
+-- |
 -- | https://developer.mozilla.org/en-US/docs/Web/API/FileSystemDirectoryReader/readEntries
 readDirectory :: FileSystemDirectoryEntry -> Aff (Array (Either FileSystemFileEntry FileSystemDirectoryEntry))
 readDirectory directoryEntry =
   toAffE $ runEffectFn3 readDirectoryImpl Left Right directoryEntry
 
+-- | Returns a File object which can be used to read data from the file
+-- | represented by the directory entry.
+-- |
 -- | https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileEntry/file
 getFile :: FileSystemFileEntry -> Aff File
 getFile entry = toAffE $ runEffectFn1 getFileImpl entry
 
 foreign import getFileImpl :: EffectFn1 FileSystemFileEntry (Promise File)
 
--- | Actually this returns a `USVString`?
+-- | The read-only name property of the FileSystemEntry interface returns
+-- | a `USVString` specifying the entry's name.
+-- |
 -- | https://developer.mozilla.org/en-US/docs/Web/API/FileSystemEntry/name
 foreign import directoryName :: FileSystemDirectoryEntry -> String
 
--- | Actually this returns a `USVString`?
+-- | A `USVString` object which provides the full, absolute path from the
+-- | file system's root to the entry.
+-- |
+-- | https://developer.mozilla.org/en-US/docs/Web/API/FileSystemEntry/fullPath
+foreign import directoryPath :: FileSystemDirectoryEntry -> String
+
+-- | The read-only name property of the FileSystemEntry interface returns
+-- | a `USVString` specifying the entry's name.
+-- |
 -- | https://developer.mozilla.org/en-US/docs/Web/API/FileSystemEntry/name
 foreign import fileName :: FileSystemFileEntry -> String
+
+-- | A `USVString` object which provides the full, absolute path from the
+-- | file system's root to the entry.
+-- |
+-- | https://developer.mozilla.org/en-US/docs/Web/API/FileSystemEntry/fullPath
+foreign import filePath :: FileSystemFileEntry -> String
