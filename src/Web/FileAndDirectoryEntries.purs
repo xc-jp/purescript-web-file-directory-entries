@@ -1,7 +1,7 @@
 -- | The *File and Directory Entries API* WICG Draft Report
 -- |
 -- | * https://wicg.github.io/entries-api
--- | * https://developer.mozilla.org/en-US/docs/Web/API/File_and_Directory_Entries_API
+-- | * https://developer.mozilla.org/en-US/docs/Web/API/File_and_Directory_Entries_API/Introduction
 -- |
 -- | See package README for usage examples.
 module Web.FileAndDirectoryEntries
