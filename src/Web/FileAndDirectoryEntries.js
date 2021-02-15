@@ -9,23 +9,30 @@ exports.dataTransferItemList = (dataTransfer) => {
   return ret;
 }
 
-exports.webkitGetAsEntry = (dataTransferItem) => {
-  return dataTransferItem.webkitGetAsEntry();
+exports.webkitGetAsEntryImpl = (nothing, just, dataTransferItem) => {
+  const ret = dataTransferItem.webkitGetAsEntry();
+  if (ret) {
+    return just(ret);
+  }
+  else {
+    return nothing;
+  }
 }
 
 exports.getEntriesImpl = (left, right, dataTransfer) => {
   const len = dataTransfer.items.length;
-  const ret = new Array(len);
+  const ret = new Array();
   for (var i=0;i<len;++i) {
     const item = dataTransfer.items[i];
     const entry = item.webkitGetAsEntry();
     if (entry.isFile) {
-      ret[i] = left(entry);
+      ret.push(left(entry));
     }
     else if (entry.isDirectory) {
-      ret[i] = right(entry);
+      ret.push(right(entry));
     }
-    else throw("neither file nor directory");
+    else { // neither file nor directory
+    }
   }
   return ret;
 }

@@ -6,7 +6,7 @@ Type definitions and implementation for the
 This library is incomplete. It currently contains the read-only portion of the
 *File and Directory Entries API* which
 we needed to implement drag-and-drop file upload on a web page, where the
-“file” being uploaded can be an entire directory tree.
+“file” being uploaded can multiple files or an entire directory tree.
 
 There is another portion of the *File and Directory Entries API* concerned
 with writing to a file system, and that portion we have not implemented.

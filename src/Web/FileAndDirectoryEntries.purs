@@ -1,7 +1,7 @@
--- | We could publish this module.
+-- | The *File and Directory Entries API* WICG Draft Report
 -- | https://wicg.github.io/entries-api
 -- | https://developer.mozilla.org/en-US/docs/Web/API/File_and_Directory_Entries_API
-module FileAndDirectoryEntries
+module Web.FileAndDirectoryEntries
   ( FileSystemFileEntry
   , FileSystemDirectoryEntry
   , getEntries
@@ -12,25 +12,34 @@ module FileAndDirectoryEntries
   )
 where
 
--- | https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer
-
 import Prelude
 
 import Control.Promise (Promise, toAffE)
 import Data.Either (Either(..))
 import Data.Function.Uncurried (Fn3, runFn3)
+import Data.Maybe (Maybe(..))
 import Effect.Aff (Aff)
 import Effect.Uncurried (EffectFn1, EffectFn3, runEffectFn1, runEffectFn3)
 import Web.File.File (File)
 import Web.HTML.Event.DataTransfer (DataTransfer)
 
+-- | A list of `DataTransferItem` objects representing items being dragged.
+-- |
+-- | https://developer.mozilla.org/en-US/docs/Web/API/DataTransferItemList
 foreign import dataTransferItemList :: DataTransfer -> Array DataTransferItem
 
 -- | https://developer.mozilla.org/en-US/docs/Web/API/DataTransferItem/webkitGetAsEntry
--- | https://pursuit.purescript.org/search?q=webkitGetAsEntry
-foreign import webkitGetAsEntry :: DataTransferItem -> FileSystemEntry
+webkitGetAsEntry :: DataTransferItem -> Maybe FileSystemEntry
+webkitGetAsEntry dataTransferItem =
+  runFn3 webkitGetAsEntryImpl Nothing Just dataTransferItem
 
--- | https://developer.mozilla.org/en-US/docs/Web/API/DataTransferItemList
+foreign import webkitGetAsEntryImpl
+  :: forall a. Fn3
+  (Maybe a)
+  (a -> Maybe a)
+  DataTransferItem
+  (Maybe FileSystemEntry)
+
 -- foreign import data DataTransferItemList
 
 -- | https://developer.mozilla.org/en-US/docs/Web/API/DataTransferItem
