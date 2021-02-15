@@ -1,5 +1,7 @@
 # purescript-web-file-directory-entries
 
+[![Pursuit](http://pursuit.purescript.org/packages/purescript-web-file-directory-entries/badge)](http://pursuit.purescript.org/packages/purescript-web-file-directory-entries/)
+
 Type definitions and implementation for the
 [*File and Directory Entries API* WICG Draft Report](https://wicg.github.io/entries-api). This API is not a standard, and will
 [probably never be a standard](https://developer.mozilla.org/en-US/docs/Web/API/File_and_Directory_Entries_API/Firefox_support).
