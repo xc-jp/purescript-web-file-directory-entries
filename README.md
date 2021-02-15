@@ -21,3 +21,19 @@ Pull requests welcome!
 
 ## Usage Example
 
+```purescript
+import React.Basic.Events (EventHandler)
+import React.Basic.DOM.Events (capture, dataTransfer)
+import Data.Filterable (partitionMap)
+import Effect.Aff (launchAff_)
+import Web.FileAndDirectoryEntries (getEntries, readDirectory)
+
+onDropHandler :: EventHandler
+onDropHandler = capture dataTransfer $ maybe (pure unit) $ \dataTrans -> do
+  let { left: files, right: dirs } = partitionMap identity $ getEntries dataTrans
+  launchAff_ do
+    for dirs $ \dir -> do
+      { left: subfiles, right: subdirs } <- partitionMap identity <$> readDirectory dir
+  ...
+```
+
